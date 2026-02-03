@@ -15,6 +15,7 @@ import ContactUs from "./components/Customer/Contactus";
 import Cart from "./components/Customer/cart";
 import Signup from "./pages/Signup";
 import Users from "./components/Admin/Users";
+import Purchased from "./components/Customer/Purchased";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
         <Route path="aboutus" element={<AboutUs />} />
         <Route path="contactus" element={<ContactUs />} />
         <Route path="cart" element={<Cart />} />
+        <Route path="purchased" element={<Purchased />} />
       </Route>
 
       <Route
