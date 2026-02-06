@@ -110,7 +110,7 @@ const Purchase = () => {
             <img
               src={`${baseImageUrl}/${product.image}`}
               alt={product.productName}
-              className="w-full h-48 object-cover"
+              className="w-full h-48 object-contain p-2 bg-white"
             />
 
             <div className="p-4">
