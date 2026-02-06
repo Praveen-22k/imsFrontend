@@ -10,6 +10,7 @@ export const Suppliers = () => {
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
 
+  // Submit (Add / Update)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -41,6 +42,7 @@ export const Suppliers = () => {
     }
   };
 
+  // Fetch suppliers
   const getSuppliers = async () => {
     try {
       const res = await axios.get("http://localhost:9000/api/supplier");
@@ -50,6 +52,7 @@ export const Suppliers = () => {
     }
   };
 
+  // Delete supplier
   const deleteSupplier = async (id) => {
     if (!window.confirm("Are you sure?")) return;
     try {
@@ -63,6 +66,7 @@ export const Suppliers = () => {
     }
   };
 
+  // Reset modal
   const resetForm = () => {
     setSupplierName("");
     setSupplierAddress("");
@@ -78,8 +82,10 @@ export const Suppliers = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 mt-4">
         <h1 className="text-xl sm:text-2xl font-bold">Supplier Management</h1>
+
         <button
           className="bg-green-500 text-white px-4 py-2 rounded w-full sm:w-auto"
           onClick={() => setShowModal(true)}
@@ -88,6 +94,7 @@ export const Suppliers = () => {
         </button>
       </div>
 
+      {/* Table */}
       <div className="w-full overflow-x-auto rounded-lg shadow">
         <table className="min-w-[800px] w-full border border-gray-200 rounded-lg">
           <thead className="bg-gray-100">
@@ -139,6 +146,7 @@ export const Suppliers = () => {
         </table>
       </div>
 
+      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-3">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md sm:max-w-lg p-4 sm:p-6">

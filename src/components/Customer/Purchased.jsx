@@ -17,9 +17,9 @@ const Purchased = () => {
     axios
       .get(`${baseApi}/purchased?userId=${user.id}`)
       .then((res) => {
-        console.log("Full API response ", res);
-        console.log("Backend data ", res.data);
-        console.log("Orders array ", res.data.data);
+        // console.log("Full API response ", res);
+        // console.log("Backend data ", res.data);
+        // console.log("Orders array ", res.data.data);
 
         setOrders(res.data.data);
       })

@@ -16,6 +16,8 @@ import Cart from "./components/Customer/cart";
 import Signup from "./pages/Signup";
 import Users from "./components/Admin/Users";
 import Purchased from "./components/Customer/Purchased";
+import AdminPurchased from "./components/Admin/AdminPurchased";
+import AdminDashboard from "./components/Admin/AdminDashboard";
 
 function App() {
   return (
@@ -32,11 +34,11 @@ function App() {
           </ProtectedRoutes>
         }
       >
-        <Route index element={<h1>summary of dashboard</h1>} />
+        <Route index element={<AdminDashboard />} />
         <Route path="categories" element={<Categorires />} />
         <Route path="products" element={<Products />} />
         <Route path="suppliers" element={<Suppliers />} />
-        <Route path="orders" element={<h1>orders of dashboard</h1>} />
+        <Route path="orders" element={<AdminPurchased />} />
         <Route path="users" element={<Users />} />
         <Route path="logout" element={<h1>Logout of dashboard</h1>} />
       </Route>

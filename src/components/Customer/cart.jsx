@@ -10,6 +10,7 @@ const Cart = () => {
   const baseImageUrl = "http://localhost:9000/upload";
 
   const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const authHeader = {
     headers: {
@@ -21,16 +22,25 @@ const Cart = () => {
     fetchCart();
   }, []);
 
+  // ================= FETCH CART =================
   const fetchCart = async () => {
     try {
       const user = JSON.parse(localStorage.getItem("pos-user"));
+
       const res = await axios.get(`${baseApi}/cart/${user.id}`, authHeader);
-      setCart(res.data.data.items);
+      console.log("CArt data found:", res.data);
+
+      // backend → { success, data:{ items:[...] } }
+      setCart(res.data?.data?.items || []);
+      setLoading(false);
     } catch (error) {
       console.log("Fetch cart error", error);
+      setCart([]);
+      setLoading(false);
     }
   };
 
+  // ================= QTY =================
   const increaseQty = async (id) => {
     await axios.put(`${baseApi}/cart/increase/${id}`, {}, authHeader);
     fetchCart();
@@ -46,6 +56,7 @@ const Cart = () => {
     fetchCart();
   };
 
+  // ================= CHECKOUT =================
   const checkout = async () => {
     try {
       const user = JSON.parse(localStorage.getItem("pos-user"));
@@ -63,38 +74,38 @@ const Cart = () => {
     }
   };
 
-  const grandTotal = cart.reduce(
-    (sum, item) => sum + item.productId.productPrice * item.qty,
-    0,
-  );
+  // ================= TOTAL =================
+  const grandTotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+  if (loading) return <p className="p-6">Loading...</p>;
 
   return (
     <div className="min-h-screen bg-[#f5f6f3] p-4 md:p-6">
       {/* HEADER */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-3">
-        <h1 className="text-2xl md:text-3xl font-semibold">Cart</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-semibold">Cart</h1>
 
         <button
           onClick={() => navigate("/customer/purchased")}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 w-full sm:w-auto"
+          className="bg-green-600 text-white px-4 py-2 rounded-lg"
         >
-          Purchased Cart
+          Purchased
         </button>
       </div>
 
       {cart.length === 0 ? (
         <p className="text-center text-gray-500 text-lg">Your cart is empty</p>
       ) : (
-        <div className="overflow-x-auto bg-white rounded-xl shadow">
+        <div className="bg-white rounded-xl shadow overflow-x-auto">
           <table className="w-full min-w-[700px]">
-            <thead className="border-b bg-gray-50">
-              <tr className="text-gray-700 text-sm md:text-base">
+            <thead className="bg-gray-100 border-b">
+              <tr>
                 <th className="p-3">Image</th>
                 <th className="p-3">Product</th>
                 <th className="p-3">Price</th>
-                <th className="p-3 text-center">Qty</th>
+                <th className="p-3">Qty</th>
                 <th className="p-3">Total</th>
-                <th className="p-3 text-center">Remove</th>
+                <th className="p-3">Remove</th>
               </tr>
             </thead>
 
@@ -102,50 +113,47 @@ const Cart = () => {
               {cart.map((item) => (
                 <motion.tr
                   key={item._id}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="border-b text-sm md:text-base"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="border-b"
                 >
                   <td className="p-3">
                     <img
-                      src={`${baseImageUrl}/${item.productId.image}`}
-                      alt={item.productId.productName}
-                      className="w-16 h-16 md:w-20 md:h-20 object-cover rounded"
+                      src={`${baseImageUrl}/${item.image}`}
+                      className="w-16 h-16 object-cover rounded"
                     />
                   </td>
 
-                  <td className="p-3 font-medium">
-                    {item.productId.productName}
-                  </td>
+                  <td className="p-3">{item.name}</td>
 
-                  <td className="p-3">₹ {item.productId.productPrice}</td>
+                  <td className="p-3">₹ {item.price}</td>
 
                   <td className="p-3">
-                    <div className="flex justify-center items-center gap-2">
+                    <div className="flex items-center gap-2">
                       <button
                         onClick={() => decreaseQty(item._id)}
-                        className="w-7 h-7 border rounded"
+                        className="border px-2 rounded"
                       >
-                        −
+                        -
                       </button>
+
                       <span>{item.qty}</span>
+
                       <button
                         onClick={() => increaseQty(item._id)}
-                        className="w-7 h-7 border rounded"
+                        className="border px-2 rounded"
                       >
                         +
                       </button>
                     </div>
                   </td>
 
-                  <td className="p-3 font-semibold">
-                    ₹ {item.productId.productPrice * item.qty}
-                  </td>
+                  <td className="p-3">₹ {item.price * item.qty}</td>
 
-                  <td className="p-3 text-center">
+                  <td className="p-3">
                     <button
                       onClick={() => removeItem(item._id)}
-                      className="text-xl hover:text-red-600"
+                      className="text-red-600 text-xl"
                     >
                       ×
                     </button>
@@ -157,20 +165,19 @@ const Cart = () => {
         </div>
       )}
 
-      {/* TOTAL BOX */}
       {cart.length > 0 && (
         <div className="flex justify-end mt-6">
-          <div className="bg-white p-4 md:p-6 rounded-xl shadow w-full sm:w-[350px]">
-            <div className="flex justify-between mb-4 text-lg font-semibold">
+          <div className="bg-white p-6 rounded-xl shadow w-[350px]">
+            <div className="flex justify-between text-lg font-semibold mb-4">
               <span>Total</span>
               <span>₹ {grandTotal}</span>
             </div>
 
             <button
               onClick={checkout}
-              className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-800"
+              className="w-full bg-purple-600 text-white py-3 rounded-lg"
             >
-              Proceed to Checkout
+              Checkout
             </button>
           </div>
         </div>
